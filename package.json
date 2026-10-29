@@ -1,0 +1,12 @@
+{
+  "name": "zombie-arena",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Jogo de sobrevivência em canvas (JS puro, ES Modules, sem build).",
+  "type": "module",
+  "scripts": {
+    "start": "npx --yes serve -l 5500 .",
+    "dev": "npx --yes vite",
+    "check": "node --check main.js && node --check src/core/Game.js"
+  }
+}

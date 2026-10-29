@@ -6,8 +6,12 @@ export default class Loop {
 
   start() {
     const loop = (time) => {
-      const deltaTime = (time - this.lastTime) / 1000;
+      let deltaTime = (time - this.lastTime) / 1000;
       this.lastTime = time;
+
+      // Clamp: ao trocar de aba o delta pode ser enorme (segundos/minutos),
+      // o que faria entidades "teletransportarem" e atravessarem colisões.
+      deltaTime = Math.min(deltaTime, Loop.MAX_DELTA);
 
       this.game.update(deltaTime);
       this.game.render();
@@ -21,5 +25,8 @@ export default class Loop {
 
   stop() {
     if (this.rafId) cancelAnimationFrame(this.rafId);
+    this.rafId = null;
   }
 }
+
+Loop.MAX_DELTA = 0.05; // 50 ms — teto de simulação por frame

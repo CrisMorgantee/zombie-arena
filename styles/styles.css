@@ -12,3 +12,19 @@ canvas {
   background-color: #1c1c1c;
   image-rendering: pixelated;
 }
+.hint {
+  position: fixed;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #666;
+  font-family: monospace;
+  font-size: 12px;
+  margin: 0;
+  pointer-events: none; /* não rouba cliques do canvas */
+}
+
+canvas {
+  cursor: crosshair;
+}
