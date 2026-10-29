@@ -1,17 +1,33 @@
 export default class AudioSystem {
   constructor() {
-    this.context = new (window.AudioContext || window.AudioContext)();
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    // Navegadores sem suporte a WebAudio: o jogo segue funcionando sem som.
+    this.context = AudioCtx ? new AudioCtx() : null;
     this.buffers = new Map();
   }
 
   async load(name, src) {
-    const response = await fetch(src);
-    const arrayBuffer = await response.arrayBuffer();
-    const audioBuffer = await this.context.decodeAudioData(arrayBuffer);
-    this.buffers.set(name, audioBuffer);
+    if (!this.context) return;
+    try {
+      const response = await fetch(src);
+      if (!response.ok) throw new Error(`HTTP ${response.status} em ${src}`);
+      const arrayBuffer = await response.arrayBuffer();
+      const audioBuffer = await this.context.decodeAudioData(arrayBuffer);
+      this.buffers.set(name, audioBuffer);
+    } catch (err) {
+      // Áudio é opcional: registra o problema mas não impede o jogo de iniciar.
+      console.warn(`[AudioSystem] não foi possível carregar "${name}" (${src}):`, err);
+    }
   }
 
   play(name, options = {}) {
+    if (!this.context) return;
+
+    // Autoplay policy: o contexto inicia "suspended" até um gesto do usuário.
+    if (this.context.state === 'suspended') {
+      this.context.resume().catch(() => {});
+    }
+
     const buffer = this.buffers.get(name);
     if (!buffer) return;
 
